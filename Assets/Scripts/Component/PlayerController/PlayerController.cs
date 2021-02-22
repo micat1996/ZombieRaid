@@ -4,12 +4,23 @@ using UnityEngine;
 
 public sealed class PlayerController : PlayerControllerBase
 {
+	public VirtualJoystick moveJoystick { get; private set; }
+	public VirtualJoystick attackJoystick { get; private set; }
+
 	// 플레이어 입력 값을 저장합니다.
 	public Vector3 inputMovementAxis { get; private set; }
 
 	// 플레이어 공격 입력 값을 저장합니다.
 	public Vector3 inputAttackAxis { get; private set; }
 
+
+	protected override void CreateUICanvas()
+	{
+		base.CreateUICanvas();
+
+		moveJoystick = (screenInstance as GameScreenInstance).movementJoystick;
+		attackJoystick = (screenInstance as GameScreenInstance).attackJoystick;
+	}
 
 	private void Update()
 	{
@@ -23,17 +34,15 @@ public sealed class PlayerController : PlayerControllerBase
 	// 입력 축 값을 갱신합니다.
 	private void UpdateInputAxisValue()
 	{
-		var movementAxis = (screenInstance as GameScreenInstance).movementJoystick.inputAxis;
-		var attackAxis = (screenInstance as GameScreenInstance).attackJoystick.inputAxis;
-
-		inputMovementAxis = new Vector3(movementAxis.x, 0.0f, movementAxis.y);
-		inputAttackAxis = new Vector3(attackAxis.x, 0.0f, attackAxis.y);
+		inputMovementAxis = new Vector3(moveJoystick.inputAxis.x, 0.0f, moveJoystick.inputAxis.y);
+		inputAttackAxis = new Vector3(attackJoystick.inputAxis.x, 0.0f, attackJoystick.inputAxis.y);
 	}
 
 	// 컨트롤러를 회전시킵니다.
 	private void RotateController()
 	{
-		if (inputAttackAxis.magnitude <= 0.1f) return;
+		// 조이스틱 입력이 없다면 실행 X
+		if (!attackJoystick.isInput) return;
 
 		// 입력 방향을 Y 축 기준 회전 값으로 변경합니다.
 		float yawAngle = inputAttackAxis.ToAngle();

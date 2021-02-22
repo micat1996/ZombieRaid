@@ -13,7 +13,7 @@ public class PlayerControllerBase : MonoBehaviour
 	
 
 	// UI Canvas 를 생성합니다.
-	private void CreateUICanvas()
+	protected virtual void CreateUICanvas()
 	{
 		screenInstance = Instantiate(_ScreenInstancePrefab);
 
