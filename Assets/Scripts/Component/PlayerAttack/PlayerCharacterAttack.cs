@@ -17,6 +17,16 @@ public sealed class PlayerCharacterAttack : MonoBehaviour
 	[Header("미사일 개수")]
 	[SerializeField] private int _MissileCount = 5;
 
+	[Header("미사일 최소 / 최대 속력")]
+	[SerializeField] private float _MissileSpeedMin = 15.0f;
+	[SerializeField] private float _MissileSpeedMax = 40.0f;
+
+	[Header("회전시킬 미사일 오브젝트")]
+	[SerializeField] private GameObject _MissileObjectToRotate;
+
+	[Header("미사일 yaw 회전 속도")]
+	[SerializeField] private float _MissileYawRotationRate = 360.0f;
+
 	// 마지막 미사일 발사 시간을 저장할 변수
 	private float _LastFireTime;
 
@@ -48,6 +58,13 @@ public sealed class PlayerCharacterAttack : MonoBehaviour
 	{
 		// 미사일을 발사합니다.
 		FireMissile();
+	}
+
+	// 미사일 오브젝트를 회전시킵니다.
+	// 미사일 ㅗㅇ브젯ㄱ트로 옮기기
+	private void RotateMissileObject()
+	{
+		_MissileObjectToRotate.transform.eulerAngles += Vector3.up * _MissileYawRotationRate * Time.deltaTime;
 	}
 
 	// 미사일을 발사합니다.
@@ -98,13 +115,15 @@ public sealed class PlayerCharacterAttack : MonoBehaviour
 				var newLeftPlayerMissile = CreateMissileObject();
 				var newRightPlayerMissile = CreateMissileObject();
 
-				// 미사일 초기 위치 설정
-				newLeftPlayerMissile.transform.position = _MissileFireLeftPos.position;
-				newRightPlayerMissile.transform.position = _MissileFireRightPos.position;
-
 				// 미사일을 발사시킵니다.
-				newLeftPlayerMissile.Fire();
-				newRightPlayerMissile.Fire();
+				newLeftPlayerMissile.Fire(
+					_MissileFireLeftPos.position, 
+					_MissileFireLeftPos.forward, 
+					Random.Range(_MissileSpeedMin, _MissileSpeedMax));
+				newRightPlayerMissile.Fire(
+					_MissileFireRightPos.position,
+					_MissileFireRightPos.forward,
+					Random.Range(_MissileSpeedMin, _MissileSpeedMax));
 
 			}
 
